@@ -56,7 +56,7 @@ while True:
             face_distance = face_distances[first_match_index]
             # Call function to generate accuracy as percentage
             confidence = face_distance_to_conf(face_distance)
-            accuracy = confidence
+            accuracy = confidence * 100
         print (accuracy)
         top *= 3
         right *= 3
@@ -67,7 +67,7 @@ while True:
 
         cv2.rectangle(frame, (left, bottom -35), (right, bottom), (255, 0, 0), cv2.FILLED)
         cv2.putText(frame, name, (left +6, bottom -6), font, 0.65, (0, 0, 255), 2)
-        cv2.putText(frame, f'{round(accuracy,2)}%', (right +6, bottom -6), font, 0.65, (0, 0, 255), 2)
+        cv2.putText(frame, f'{round(accuracy,1)}%', (right +6, bottom -6), font, 0.65, (0, 0, 255), 2)
     cv2.imshow('Live Video',frame)
     cv2.moveWindow('Live Video',0,0)
     if cv2.waitKey(1) == ord('q'):

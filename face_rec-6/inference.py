@@ -2,6 +2,7 @@ import face_recognition as fr
 import cv2 
 import pickle
 import math
+import time 
 
 from face_recognition.api import face_distance, face_encodings 
 
@@ -18,7 +19,13 @@ def face_distance_to_conf(face_distance, face_match_threshold=0.6):
 Encodings = []
 Names = []
 font = cv2.FONT_HERSHEY_DUPLEX
-MODEL = 'cnn' 
+MODEL = 'hog' 
+
+# used to record the time when we processed last frame 
+prev_frame_time = 0
+  
+# used to record the time at which we processed current frame 
+new_frame_time = 0
 
 with open('known_faces_feature.pkl','rb') as f:
     Encodings = pickle.load(f)
@@ -37,8 +44,14 @@ while True:
     frameRGB = cv2.cvtColor(frameSmall,cv2.COLOR_BGR2RGB)
     facePositions = fr.face_locations(frameRGB, model = MODEL)
     allEncoding = fr.face_encodings(frameRGB,facePositions)
+    new_frame_time = time.time() 
+    fps = 1/(new_frame_time-prev_frame_time) 
+    prev_frame_time = new_frame_time 
+    fps = int(fps)
+    fps = str(fps)
+    cv2.putText(frame, fps, (7, 70), font, 2, (100, 255, 0), 2, cv2.FILLED)
     for (top,right,bottom,left), faceEncoding in zip(facePositions,allEncoding):
-        name = 'Unknown Person'
+        name = 'Unknown'
         acc = 100.0
         matches = fr.compare_faces(Encodings,faceEncoding)
         face_distances = fr.face_distance(Encodings,faceEncoding)
